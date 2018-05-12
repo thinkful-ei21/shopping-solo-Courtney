@@ -29,6 +29,9 @@ const STORE = {
 //--------------------------------------------------------------------
 
 
+
+//Tried refactoring to make retrieveUserInput it's own function
+
 // function retrieveUserInput(jQuerySelector) {
 //   $('#js-shopping-list-form').submit(function(event) {
 //     event.preventDefault();
@@ -111,6 +114,9 @@ function handleItemCheckClicked() {
 }
 
 
+
+//Tried refactoring to have getItemIndex be it's own function
+
 // function getItemIndex(currentTarget) {
 
 //   return currentTarget.closest('li').attr('data-item-index');
@@ -162,6 +168,12 @@ function isChecked() {
 
 function editItem() {
 
+  $('.js-shopping-item').keypress(event => {
+    if (event.which === 13) {
+      const updatedName = $('js-shopping-item').val();
+      console.log(updatedName);
+    } 
+  });
 }
 
 
@@ -174,7 +186,7 @@ function editItem() {
 function generateItemElement(item, itemIndex, template) {
   return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
-      <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked" : ''}">${item.name}</span>
+      <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked" : ''}" contenteditable="true">${item.name}</span>
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
             <span class="button-label">check</span>
@@ -245,6 +257,7 @@ function handleShoppingList() {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   isChecked();
+  //editItem();
 }
 
 //When the page loads, calls handleShoppingList
