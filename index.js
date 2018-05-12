@@ -30,9 +30,9 @@ const STORE = {
 
 
 
-//Tried refactoring to make retrieveUserInput it's own function
+//Tried refactoring to make retrieveUserInput it's own function to be used by searchForItem and handleNewItemSubmit
 
-// function retrieveUserInput(jQuerySelector) {
+// function retrieveUserInputFromForm(jQuerySelector) {
 //   $('#js-shopping-list-form').submit(function(event) {
 //     event.preventDefault();
 
@@ -48,6 +48,8 @@ const STORE = {
 //   });
 // }
 
+
+//updated version of handleNewItemSubmit
 
 // function handleNewItemSubmit() {
 
@@ -81,6 +83,49 @@ function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
   STORE.items.push({name: itemName, checked: false});
 }
+
+
+//Searches for item in STORE
+function searchForItem() {
+
+  $('#js-shopping-list-form').submit(function(event) {
+    event.preventDefault();
+
+    if ($('.search').val() === '') return; //prevents user from being able to add empty item (ex: '')
+
+    else {
+      const searchingFor = $('.search').val();
+      $('.search').val(''); //resets search bar
+      
+      //filter function
+      //renderShoppingList(...searchStoreForList(searchingFor));
+      const itemName = searchStoreForList(searchingFor);
+      console.log(itemName);
+      console.log(generateItemElement(itemName, 0));
+      $('.js-shopping-list').html(generateItemElement(itemName, 0));
+    }
+  });
+}
+
+
+
+function searchStoreForList(desiredItem) {
+
+  // console.log(desiredItem);
+  // console.log(STORE.items);
+  // console.log(STORE.items.filter(item => item.name === desiredItem));
+
+  const arrayOfItem = STORE.items.filter(item => item.name === desiredItem);
+  //console.log(arrayOfItem[0].name);
+  //if(!arrayOfItem) console.log('item not in list');
+
+
+
+  return arrayOfItem[0];
+}
+
+
+
 
 
 
@@ -179,6 +224,8 @@ function editItem() {
 
 
 
+
+
 /*************************HANDLING HTML*****************************/
 
 
@@ -208,10 +255,9 @@ function generateItemElement(item, itemIndex, template) {
 //------------------------------------------------------------------
 
 function generateShoppingItemsString(shoppingList) {
-  console.log("Generating shopping list element");
 
   const items = shoppingList.map((item, index) => generateItemElement(item, index));
-
+  //console.log(items);
   return items.join("");
 }
 
@@ -222,19 +268,17 @@ function generateShoppingItemsString(shoppingList) {
 
 //------------------------------------------------------------------
 
-function renderShoppingList() {
- 
-  console.log('`renderShoppingList` ran');
+function renderShoppingList(listItems = [...STORE.items]) {
 
-  let checkedListItems = [...STORE.items];
+  //let checkedListItems = [...STORE.items];
   
   if(!STORE.showChecked) {
-    checkedListItems = checkedListItems.filter(item => item.checked === false); //checks if each item has checked === true property and stores in array
+    listItems = listItems.filter(item => item.checked === false); //checks if each item has checked === true property and stores in array
   }
   
 
   // insert that HTML into the DOM
-  $('.js-shopping-list').html(generateShoppingItemsString(checkedListItems));
+  $('.js-shopping-list').html(generateShoppingItemsString(listItems));
 }
 
 
@@ -258,6 +302,7 @@ function handleShoppingList() {
   handleDeleteItemClicked();
   isChecked();
   //editItem();
+  searchForItem();
 }
 
 //When the page loads, calls handleShoppingList
