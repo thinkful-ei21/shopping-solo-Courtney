@@ -10,7 +10,7 @@ const STORE = {
     {name: "milk", checked: true},
     {name: "bread", checked: false}
   ],
-  showUnchecked: false
+  showChecked: true
 };
   
 
@@ -49,7 +49,7 @@ function handleNewItemSubmit() {
 //Stores user input in database, defaults to unchecked
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
-  STORE.push({name: itemName, checked: false});
+  STORE.items.push({name: itemName, checked: false});
 }
 
 
@@ -62,12 +62,12 @@ function addItemToShoppingList(itemName) {
 //When checkbox changes, update STORE property
 
 function isChecked() {
-  $('.switch:checked').change(function() {
-      
-      return STORE.showUnchecked = !STORE.showUnchecked;
-     
+  $('.switch').change(function() {
+      //console.log(STORE.showChecked);
+      STORE.showChecked = !STORE.showChecked;
+      return;
   });
-  console.log(STORE.showUnchecked);
+  
 }
 
 
@@ -121,8 +121,8 @@ function renderShoppingList() {
   console.log('`renderShoppingList` ran');
 
   let checkedListItems = [...STORE.items];
-  if(STORE.showUnchecked) {
-    checkedListItems = checkedListItems.filter(item => item.checked); //checks if each item has checked === true property and stores in array
+  if(isChecked()) {
+    checkedListItems = checkedListItems.filter(item => !item.checked); //checks if each item has checked === true property and stores in array
   }
   //console.log(checkedListItems);
 
@@ -155,6 +155,12 @@ function handleItemCheckClicked() {
 }
 
 
+// function getItemIndex(currentTarget) {
+
+//   return currentTarget.closest('li').attr('data-item-index');
+// }
+
+
 //Changes checked property of item in STORE to the opposite of what it currently is 
 //(ex: if item.checked === false, toggleCheck will change it to true and vice versa)
 function toggleCheck(index) {
@@ -169,7 +175,9 @@ function toggleCheck(index) {
 function handleDeleteItemClicked() {
 
   $('.shopping-list').on('click','.js-item-delete', function(event){
-    $(this).closest('li').remove();
+    const itemIndex = $(this).closest('li').attr('data-item-index');
+    STORE.items.splice(itemIndex,1);
+    renderShoppingList();
 
   });
 
@@ -199,7 +207,7 @@ function handleShoppingList() {
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
-  isChecked();
+  //isChecked();
 }
 
 //When the page loads, calls handleShoppingList
