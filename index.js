@@ -100,8 +100,11 @@ function searchForItem() {
       //filter function
       //renderShoppingList(...searchStoreForList(searchingFor));
       const itemName = searchStoreForList(searchingFor);
-      console.log(itemName);
-      console.log(generateItemElement(itemName, 0));
+      // console.log(itemName);
+      // console.log(itemName === undefined);
+      if (itemName === undefined) throw new Error('Item not in list');
+
+      //console.log(generateItemElement(itemName, 0));
       $('.js-shopping-list').html(generateItemElement(itemName, 0));
     }
   });
@@ -116,8 +119,7 @@ function searchStoreForList(desiredItem) {
   // console.log(STORE.items.filter(item => item.name === desiredItem));
 
   const arrayOfItem = STORE.items.filter(item => item.name === desiredItem);
-  //console.log(arrayOfItem[0].name);
-  //if(!arrayOfItem) console.log('item not in list');
+  //console.log(arrayOfItem);
 
 
 
@@ -181,6 +183,8 @@ function toggleCheck(index) {
 
 function handleDeleteItemClicked() {
 
+
+  //tried using .click shorthand instead of .on('click', etc) but couldn't get it to work...
   $('.shopping-list').on('click','.js-item-delete', function(event){
     const itemIndex = $(this).closest('li').attr('data-item-index');
     STORE.items.splice(itemIndex,1);
@@ -198,9 +202,9 @@ function handleDeleteItemClicked() {
 
 function isChecked() {
   $('.switch').change(function() {
-      console.log(STORE.showChecked);
+      //console.log(STORE.showChecked);
       STORE.showChecked = !STORE.showChecked;
-      console.log(STORE.showChecked);
+      //console.log(STORE.showChecked);
       renderShoppingList();
       return;
   });
@@ -213,12 +217,19 @@ function isChecked() {
 
 function editItem() {
 
-  $('.js-shopping-item').keypress(event => {
-    if (event.which === 13) {
-      const updatedName = $('js-shopping-item').val();
-      console.log(updatedName);
-    } 
+  $('.shopping-list').on('click', '.js-item-update', event => {
+    const newName = $(this).closest('.shopping-item').val();
+    console.log(newName);
   });
+
+
+
+  // .keypress(event => {
+  //   if (event.which === 13) {
+  //     const updatedName = $('js-shopping-item').val();
+  //     console.log(updatedName);
+  //   } 
+  // });
 }
 
 
@@ -240,6 +251,9 @@ function generateItemElement(item, itemIndex, template) {
         </button>
         <button class="shopping-item-delete js-item-delete">
             <span class="button-label">delete</span>
+        </button>
+        <button class="shopping-item-update js-item-update">
+            <span class="button-label">update name</span>
         </button>
       </div>
     </li>`;
@@ -301,7 +315,7 @@ function handleShoppingList() {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   isChecked();
-  //editItem();
+  editItem();
   searchForItem();
 }
 
