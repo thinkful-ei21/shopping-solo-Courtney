@@ -86,79 +86,6 @@ function addItemToShoppingList(itemName) {
 
 
 
-//When checkbox changes, update STORE property
-
-function isChecked() {
-  $('.switch').change(function() {
-      //console.log(STORE.showChecked);
-      STORE.showChecked = !STORE.showChecked;
-      renderShoppingList();
-      return;
-  });
-  
-}
-
-
-
-
-/*************************HANDLING HTML*****************************/
-
-
-//Generates EACH list items HTML
-function generateItemElement(item, itemIndex, template) {
-  return `
-    <li class="js-item-index-element" data-item-index="${itemIndex}">
-      <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked" : ''}">${item.name}</span>
-      <div class="shopping-item-controls">
-        <button class="shopping-item-toggle js-item-toggle">
-            <span class="button-label">check</span>
-        </button>
-        <button class="shopping-item-delete js-item-delete">
-            <span class="button-label">delete</span>
-        </button>
-      </div>
-    </li>`;
-}
-
-
-
-//PRODUCES FULL HTML STRING OF SHOPPING LIST------------------------
-
-//Calls generateItemElement (generates one item at a time)
-//      joins indidvidual items into full HTML string
-
-//------------------------------------------------------------------
-
-function generateShoppingItemsString(shoppingList) {
-  console.log("Generating shopping list element");
-
-  const items = shoppingList.map((item, index) => generateItemElement(item, index));
-
-  return items.join("");
-}
-
-
-//DELIVERS HTML TO DOM----------------------------------------------
-
-//Calls generateShoppingItemsString to create full HTML for list
-
-//------------------------------------------------------------------
-
-function renderShoppingList() {
- 
-  console.log('`renderShoppingList` ran');
-
-  let checkedListItems = [...STORE.items];
-  if(!STORE.showChecked) {
-    checkedListItems = checkedListItems.filter(item => item.checked === false); //checks if each item has checked === true property and stores in array
-    console.log(checkedListItems);
-  }
-  
-
-  // insert that HTML into the DOM
-  $('.js-shopping-list').html(generateShoppingItemsString(checkedListItems));
-}
-
 
 
 
@@ -212,10 +139,91 @@ function handleDeleteItemClicked() {
 
   console.log('`handleDeleteItemClicked` ran');
 
+}
 
+
+
+//When checkbox changes, update STORE property
+
+function isChecked() {
+  $('.switch').change(function() {
+      console.log(STORE.showChecked);
+      STORE.showChecked = !STORE.showChecked;
+      console.log(STORE.showChecked);
+      renderShoppingList();
+      return;
+  });
+  
+}
+
+
+
+//EDITS NAME OF ITEM IN LIST--------------------------------------------------------
+
+function editItem() {
 
 }
 
+
+
+
+/*************************HANDLING HTML*****************************/
+
+
+//Generates EACH list items HTML
+function generateItemElement(item, itemIndex, template) {
+  return `
+    <li class="js-item-index-element" data-item-index="${itemIndex}">
+      <span class="shopping-item js-shopping-item ${item.checked ? "shopping-item__checked" : ''}">${item.name}</span>
+      <div class="shopping-item-controls">
+        <button class="shopping-item-toggle js-item-toggle">
+            <span class="button-label">check</span>
+        </button>
+        <button class="shopping-item-delete js-item-delete">
+            <span class="button-label">delete</span>
+        </button>
+      </div>
+    </li>`;
+}
+
+
+
+//PRODUCES FULL HTML STRING OF SHOPPING LIST------------------------
+
+//Calls generateItemElement (generates one item at a time)
+//      joins indidvidual items into full HTML string
+
+//------------------------------------------------------------------
+
+function generateShoppingItemsString(shoppingList) {
+  console.log("Generating shopping list element");
+
+  const items = shoppingList.map((item, index) => generateItemElement(item, index));
+
+  return items.join("");
+}
+
+
+//DELIVERS HTML TO DOM----------------------------------------------
+
+//Calls generateShoppingItemsString to create full HTML for list
+
+//------------------------------------------------------------------
+
+function renderShoppingList() {
+ 
+  console.log('`renderShoppingList` ran');
+
+  let checkedListItems = [...STORE.items];
+  
+  if(!STORE.showChecked) {
+    checkedListItems = checkedListItems.filter(item => item.checked === false); //checks if each item has checked === true property and stores in array
+  }
+  
+
+  // insert that HTML into the DOM
+  $('.js-shopping-list').html(generateShoppingItemsString(checkedListItems));
+}
 
 
 
@@ -236,7 +244,7 @@ function handleShoppingList() {
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
-  //isChecked();
+  isChecked();
 }
 
 //When the page loads, calls handleShoppingList
