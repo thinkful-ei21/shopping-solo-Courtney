@@ -28,6 +28,33 @@ const STORE = {
 
 //--------------------------------------------------------------------
 
+
+// function retrieveUserInput(jQuerySelector) {
+//   $('#js-shopping-list-form').submit(function(event) {
+//     event.preventDefault();
+
+//     //if ($(jQuerySelector).val() === '') return; //prevents user from being able to add empty item (ex: '')
+
+//    // else {
+//       const userInput = $(jQuerySelector).val(); //resets input to empty
+//       S(jQuerySelector).val('');
+//       return userInput;
+//     //}
+    
+
+//   });
+// }
+
+
+// function handleNewItemSubmit() {
+
+//       const newItemName = retrieveUserInput('.js-shopping-list-entry');
+//       addItemToShoppingList(newItemName);
+//       renderShoppingList();
+    
+// }
+
+
 function handleNewItemSubmit() {
   $('#js-shopping-list-form').submit(function(event) {
     event.preventDefault();
@@ -35,9 +62,9 @@ function handleNewItemSubmit() {
     if ($('.js-shopping-list-entry').val() === '') return; //prevents user from being able to add empty item (ex: '')
 
     else {
-      console.log('`handleNewItemSubmit` ran');
+      //console.log('`handleNewItemSubmit` ran');
       const newItemName = $('.js-shopping-list-entry').val();
-      $('.js-shopping-list-entry').val('');
+      $('.js-shopping-list-entry').val(''); //resets input to empty
       addItemToShoppingList(newItemName);
       renderShoppingList();
     }
@@ -65,6 +92,7 @@ function isChecked() {
   $('.switch').change(function() {
       //console.log(STORE.showChecked);
       STORE.showChecked = !STORE.showChecked;
+      renderShoppingList();
       return;
   });
   
@@ -121,10 +149,11 @@ function renderShoppingList() {
   console.log('`renderShoppingList` ran');
 
   let checkedListItems = [...STORE.items];
-  if(isChecked()) {
-    checkedListItems = checkedListItems.filter(item => !item.checked); //checks if each item has checked === true property and stores in array
+  if(!STORE.showChecked) {
+    checkedListItems = checkedListItems.filter(item => item.checked === false); //checks if each item has checked === true property and stores in array
+    console.log(checkedListItems);
   }
-  //console.log(checkedListItems);
+  
 
   // insert that HTML into the DOM
   $('.js-shopping-list').html(generateShoppingItemsString(checkedListItems));
@@ -133,7 +162,7 @@ function renderShoppingList() {
 
 
 
-/*************************TOGGLES**********************************/
+/*******************TOGGLES/CHANGES**********************************/
 
 
 //CHECKS & UNCHECKS ITEM IN LIST--------------------------------------
