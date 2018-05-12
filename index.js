@@ -10,7 +10,7 @@ const STORE = {
     {name: "milk", checked: true},
     {name: "bread", checked: false}
   ],
-  showChecked: false
+  showUnchecked: false
 };
   
 
@@ -59,11 +59,15 @@ function addItemToShoppingList(itemName) {
 
 
 
-//check if checkbox is checked
+//When checkbox changes, update STORE property
 
 function isChecked() {
-  $('.switch').change(() => STORE.showChecked = true);
-  console.log(STORE.showChecked);
+  $('.switch:checked').change(function() {
+      
+      return STORE.showUnchecked = !STORE.showUnchecked;
+     
+  });
+  console.log(STORE.showUnchecked);
 }
 
 
@@ -117,10 +121,10 @@ function renderShoppingList() {
   console.log('`renderShoppingList` ran');
 
   let checkedListItems = [...STORE.items];
-  if(STORE.showChecked) {
+  if(STORE.showUnchecked) {
     checkedListItems = checkedListItems.filter(item => item.checked); //checks if each item has checked === true property and stores in array
   }
-
+  //console.log(checkedListItems);
 
   // insert that HTML into the DOM
   $('.js-shopping-list').html(generateShoppingItemsString(checkedListItems));
@@ -166,8 +170,13 @@ function handleDeleteItemClicked() {
 
   $('.shopping-list').on('click','.js-item-delete', function(event){
     $(this).closest('li').remove();
+
   });
+
   console.log('`handleDeleteItemClicked` ran');
+
+
+
 }
 
 
