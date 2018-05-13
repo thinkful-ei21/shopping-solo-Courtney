@@ -21,13 +21,6 @@ const STORE = {
 /***************************USER INPUT*******************************/
 
 
-//TAKES IN USER INPUT VALUE, resets label to empty--------------------
-
-//Calls addItemToShoppingList so it can store value in database
-//Calls renderShoppingList to update the list
-
-//--------------------------------------------------------------------
-
 
 
 //Tried refactoring to make retrieveUserInput it's own function to be used by searchForItem and handleNewItemSubmit
@@ -60,6 +53,15 @@ const STORE = {
 // }
 
 
+
+
+//TAKES IN USER INPUT VALUE, resets label to empty--------------------
+
+//Calls addItemToShoppingList so it can store value in database
+//Calls renderShoppingList to update the list
+
+//--------------------------------------------------------------------
+
 function handleNewItemSubmit() {
   $('#js-shopping-list-form').submit(function(event) {
     event.preventDefault();
@@ -67,9 +69,9 @@ function handleNewItemSubmit() {
     if ($('.js-shopping-list-entry').val() === '') return; //prevents user from being able to add empty item (ex: '')
 
     else {
-      //console.log('`handleNewItemSubmit` ran');
       const newItemName = $('.js-shopping-list-entry').val();
       $('.js-shopping-list-entry').val(''); //resets input to empty
+
       addItemToShoppingList(newItemName);
       renderShoppingList();
     }
@@ -80,12 +82,18 @@ function handleNewItemSubmit() {
 
 //Stores user input in database, defaults to unchecked
 function addItemToShoppingList(itemName) {
-  console.log(`Adding "${itemName}" to shopping list`);
+
   STORE.items.push({name: itemName, checked: false});
 }
 
 
-//Searches for item in STORE
+//SEARCHES DATABASE FOR SPECIFIC ITEM IN LIST-------------------------
+
+//Calls searchStoreForItem that searches database for item
+//Renders HTML for specifc item or throws erro if item not found
+
+//--------------------------------------------------------------------
+
 function searchForItem() {
 
   $('#js-shopping-list-form').submit(function(event) {
@@ -96,42 +104,21 @@ function searchForItem() {
     else {
       const searchingFor = $('.search').val();
       $('.search').val(''); //resets search bar
-      
-      //filter function
-      //renderShoppingList(...searchStoreForList(searchingFor));
-      const itemName = searchStoreForList(searchingFor);
-      // console.log(itemName);
-      // console.log(itemName === undefined);
-      if (itemName === undefined) throw new Error('Item not in list');
 
-      //console.log(generateItemElement(itemName, 0));
+      const itemName = searchStoreForItem(searchingFor);
+      if (itemName === undefined) throw new Error('Item not in list');
       $('.js-shopping-list').html(generateItemElement(itemName, 0));
     }
   });
 }
 
 
-
-function searchStoreForList(desiredItem) {
-
-  // console.log(desiredItem);
-  // console.log(STORE.items);
-  // console.log(STORE.items.filter(item => item.name === desiredItem));
+//Searches database for desired item
+function searchStoreForItem(desiredItem) {
 
   const arrayOfItem = STORE.items.filter(item => item.name === desiredItem);
-  //console.log(arrayOfItem);
-
-
-
   return arrayOfItem[0];
 }
-
-
-
-
-
-
-
 
 
 
@@ -150,13 +137,9 @@ function searchStoreForList(desiredItem) {
 
 function handleItemCheckClicked() {
   $('.js-shopping-list').on('click', '.js-item-toggle', event => {
-    console.log('`handleItemCheckClicked` ran');
-
     const itemIndex = $(event.currentTarget).closest('li').attr('data-item-index');
-
     toggleCheck(itemIndex);
     renderShoppingList();
-
   });
 }
 
@@ -165,7 +148,6 @@ function handleItemCheckClicked() {
 //Tried refactoring to have getItemIndex be it's own function
 
 // function getItemIndex(currentTarget) {
-
 //   return currentTarget.closest('li').attr('data-item-index');
 // }
 
@@ -174,7 +156,6 @@ function handleItemCheckClicked() {
 //(ex: if item.checked === false, toggleCheck will change it to true and vice versa)
 function toggleCheck(index) {
 
-  //console.log(STORE[index]);
   STORE.items[index].checked = !STORE.items[index].checked;  
 }
 
@@ -183,28 +164,23 @@ function toggleCheck(index) {
 
 function handleDeleteItemClicked() {
 
-
   //tried using .click shorthand instead of .on('click', etc) but couldn't get it to work...
   $('.shopping-list').on('click','.js-item-delete', function(event){
     const itemIndex = $(this).closest('li').attr('data-item-index');
     STORE.items.splice(itemIndex,1);
     renderShoppingList();
-
   });
-
-  console.log('`handleDeleteItemClicked` ran');
 
 }
 
 
 
-//When checkbox changes, update STORE property
+//UPDATES LIST WHEN CHECKBOX IS TOGGLED--------------------------------------------
 
 function isChecked() {
+
   $('.switch').change(function() {
-      //console.log(STORE.showChecked);
       STORE.showChecked = !STORE.showChecked;
-      //console.log(STORE.showChecked);
       renderShoppingList();
       return;
   });
@@ -218,18 +194,11 @@ function isChecked() {
 function editItem() {
 
   $('.shopping-list').on('click', '.js-item-update', event => {
-    const newName = $(this).closest('.shopping-item').val();
-    console.log(newName);
+    const newName = $(event.currentTarget).closest('.js-item-index-element').find('.shopping-item').text();
+    const index = $(event.currentTarget).closest('.js-item-index-element').attr("data-item-index");
+    STORE.items[index].name = newName;
+    renderShoppingList();
   });
-
-
-
-  // .keypress(event => {
-  //   if (event.which === 13) {
-  //     const updatedName = $('js-shopping-item').val();
-  //     console.log(updatedName);
-  //   } 
-  // });
 }
 
 
@@ -276,6 +245,8 @@ function generateShoppingItemsString(shoppingList) {
 }
 
 
+
+
 //DELIVERS HTML TO DOM----------------------------------------------
 
 //Calls generateShoppingItemsString to create full HTML for list
@@ -284,13 +255,9 @@ function generateShoppingItemsString(shoppingList) {
 
 function renderShoppingList(listItems = [...STORE.items]) {
 
-  //let checkedListItems = [...STORE.items];
-  
   if(!STORE.showChecked) {
     listItems = listItems.filter(item => item.checked === false); //checks if each item has checked === true property and stores in array
   }
-  
-
   // insert that HTML into the DOM
   $('.js-shopping-list').html(generateShoppingItemsString(listItems));
 }
